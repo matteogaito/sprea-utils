@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import mechanicalsoup
+from urllib.parse import urlparse,parse_qs,urlencode
 
 URL = "http://sprea.it"
 
@@ -35,3 +36,18 @@ def listCampaigns(user,password):
         print(elements['href'])
         print(elements.find('strong').text)
 
+def CampaignBookView(user,password,campaign_url):
+    #Login to sprea.it
+    browser = loginIntoSprea(user,password)
+    campaign_books_view = browser.get( URL + campaign_url )
+    return(campaign_books_view)
+
+def downloadPDFofCampaign(campaign_books_view,book_position):
+    books_divs = campaign_books_view.soup.find_all("div", {"class": "col-lg-2 col-md-4 col-xs-6" })
+    pdf_url = books_divs[book_position].find('a')['href']
+    pdf_name = parse_qs((urlparse(pdf_url).query))['doc'][0]
+    anagrafica = parse_qs((urlparse(pdf_url).query))['a'][0]
+    pdf_title = parse_qs((urlparse(pdf_url).query))['o'][0]
+    print(pdf_name)
+    print(anagrafica)
+    print(pdf_title)
