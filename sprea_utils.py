@@ -5,7 +5,10 @@
 
 import mechanicalsoup
 import os
+import time
+import requests
 from urllib.parse import urlparse,parse_qs,urlencode
+from urllib.request import urlopen
 
 URL = "http://sprea.it"
 
@@ -13,6 +16,7 @@ URL = "http://sprea.it"
 class Sprea(object):
     def __init__(self, username, password):
         self.URL = "http://sprea.it"
+        self.DOWNLOAD_URL = "http://pdf.sprea.it/r/php/downloader.php"
         self.USERNAME = username
         self.PASSWORD = password
 
@@ -77,3 +81,17 @@ class Sprea(object):
         pdf_name = parse_qs((urlparse(pdf_url).query))['doc'][0]
         anagrafica = parse_qs((urlparse(pdf_url).query))['a'][0]
         pdf_title = parse_qs((urlparse(pdf_url).query))['o'][0]
+        pdf_path = download_dir + '/' + pdf_name
+        prepare_pdf_for_download = requests.post(
+            self.DOWNLOAD_URL,
+            data = {'id_anagrafica': anagrafica, 'doc': pdf_name}
+        )
+        time.sleep(5)
+        if prepare_pdf_for_download.text:
+            dpdfurl = urlopen(prepare_pdf_for_download.text)
+            try:
+                with open(pdf_path, 'wb') as pdf:
+                    pdf.write(dpdfurl.read())
+                    pdf.close()
+            except IOError as e:
+                print("Error")
