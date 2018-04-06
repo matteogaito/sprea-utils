@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 
-#TODO
-# rifattorizzare con classi login in __init__
-
 import mechanicalsoup
 import os
 import time
 import requests
-from urllib.parse import urlparse,parse_qs,urlencode
+from urllib.parse import urlparse, parse_qs
 from urllib.request import urlopen
 
 URL = "http://sprea.it"
@@ -68,23 +65,21 @@ class Sprea(object):
         if not os.path.exists(download_dir):
             os.makedirs(download_dir)
 
-    def downloadOnePdfOfCampaign(
-        self, campaign_url, book_position, download_dir="downloads"
-    ):
-        self._manageDownloadDir(download_dir)
+    def getOnePdfUrlofCampaign(self, campaign_url, book_position):
         browser = self._goIntoCampaign(campaign_url)
-        books_divs = browser.soup.find_all(
-            "div",
-            {"class": "col-lg-2 col-md-4 col-xs-6"}
-        )
+        books_divs = browser.soup.find_all( "div", {"class": "col-lg-2 col-md-4 col-xs-6"} )
         pdf_url = books_divs[book_position].find('a')['href']
-        pdf_name = parse_qs((urlparse(pdf_url).query))['doc'][0]
-        anagrafica = parse_qs((urlparse(pdf_url).query))['a'][0]
-        pdf_title = parse_qs((urlparse(pdf_url).query))['o'][0]
-        pdf_path = download_dir + '/' + pdf_name
+        return(pdf_url)
+
+    def downloadOnePdfOfCampaign(self, campaign_url, book_position, download_dir="downloads"):
+        self._manageDownloadDir(download_dir)
+        pdf_url = self.getOnePdfUrlofCampaign(self, campaign_url, book_position)
+        pdf_info = self._getPdfInfo(pdf_url)
+        pdf_path = download_dir + '/' + pdf_info['name']
+
         prepare_pdf_for_download = requests.post(
             self.DOWNLOAD_URL,
-            data = {'id_anagrafica': anagrafica, 'doc': pdf_name}
+            data = {'id_anagrafica': pdf_info['anagrafica'], 'doc': pdf_info['name']}
         )
         time.sleep(5)
         if prepare_pdf_for_download.text:
@@ -94,4 +89,11 @@ class Sprea(object):
                     pdf.write(dpdfurl.read())
                     pdf.close()
             except IOError as e:
-                print("Error")
+                print("Error {}".format(e))
+
+    def _getPdfInfo(self, pdf_url):
+        pdf_info = {}
+        pdf_info['name'] = parse_qs((urlparse(pdf_url).query))['doc'][0]
+        pdf_info['anagrafica'] = parse_qs((urlparse(pdf_url).query))['a'][0]
+        pdf_info['title'] = parse_qs((urlparse(pdf_url).query))['o'][0]
+        return(pdf_info)
