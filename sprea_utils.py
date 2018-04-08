@@ -67,13 +67,12 @@ class Sprea(object):
 
     def getOnePdfUrlofCampaign(self, campaign_url, book_position):
         browser = self._goIntoCampaign(campaign_url)
-        books_divs = browser.soup.find_all( "div", {"class": "col-lg-2 col-md-4 col-xs-6"} )
+        books_divs = browser.soup.find_all("div", {"class": "col-lg-2 col-md-4 col-xs-6"})
         pdf_url = books_divs[book_position].find('a')['href']
         return(pdf_url)
 
-    def downloadOnePdfOfCampaign(self, campaign_url, book_position, download_dir="downloads"):
+    def downloadPDFbyURL(self, pdf_url, download_dir="downloads"):
         self._manageDownloadDir(download_dir)
-        pdf_url = self.getOnePdfUrlofCampaign(self, campaign_url, book_position)
         pdf_info = self._getPdfInfo(pdf_url)
         pdf_path = download_dir + '/' + pdf_info['name']
 
@@ -90,6 +89,10 @@ class Sprea(object):
                     pdf.close()
             except IOError as e:
                 print("Error {}".format(e))
+
+    def downloadOnePdfOfCampaign(self, campaign_url, book_position, download_dir="downloads"):
+        pdf_url = self.getOnePdfUrlofCampaign(self, campaign_url, book_position)
+        self.downloadPDFbyURL(self, pdf_url, download_dir)
 
     def _getPdfInfo(self, pdf_url):
         pdf_info = {}
