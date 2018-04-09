@@ -7,7 +7,7 @@ purchased on the site sprea.it
 This library for navigate the site use *mechanicalsoup* library.
 *requests* and *urllib* is used for other small things. 
 
-** Install
+## Install
 ```
 git clone git@github.com:matteogaito/sprea-utils.git
 cd sprea-utils
@@ -19,7 +19,7 @@ But if you want put it in your requirements txt
 git+https://github.com/matteogaito/sprea-utils.git
 ```
 
-** Usage
+## Usage
 
 Example File
 ```
