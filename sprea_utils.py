@@ -87,6 +87,7 @@ class Sprea(object):
                 with open(pdf_path, 'wb') as pdf:
                     pdf.write(dpdfurl.read())
                     pdf.close()
+                    return(pdf_path)
             except IOError as e:
                 print("Error {}".format(e))
 
