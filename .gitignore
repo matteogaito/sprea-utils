@@ -2,3 +2,6 @@ __pycache__
 demo.py
 *.pyc
 downloads/
+build
+dist
+sprea_utils.egg-info/

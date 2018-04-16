@@ -23,7 +23,7 @@ setup(
     install_requires=[
         'mechanicalsoup',
         'requests',
-        'urllib',
+        'urllib3',
     ],
     classifiers=[
         'Environment :: Web Environment',
