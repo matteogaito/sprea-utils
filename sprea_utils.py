@@ -7,6 +7,9 @@ import requests
 from urllib.parse import urlparse, parse_qs
 from urllib.request import urlopen
 
+import logging
+log = logging.getLogger(__name__)
+
 URL = "http://sprea.it"
 
 
@@ -33,6 +36,7 @@ class Sprea(object):
             # return logged browser
             return(browser)
         else:
+            log.error("Login error")
             print("error")
 
     def listCampaigns(self):
@@ -72,10 +76,12 @@ class Sprea(object):
         return(pdf_url)
 
     def downloadPDFbyURL(self, pdf_url, download_dir="downloads"):
+        log.info("Starting downloadPDFbyURL")
         self._manageDownloadDir(download_dir)
         pdf_info = self._getPdfInfo(pdf_url)
         pdf_path = download_dir + '/' + pdf_info['name']
 
+        log.info("Executing post for download")
         prepare_pdf_for_download = requests.post(
             self.DOWNLOAD_URL,
             data = {'id_anagrafica': pdf_info['anagrafica'], 'doc': pdf_info['name']}
@@ -87,9 +93,10 @@ class Sprea(object):
                 with open(pdf_path, 'wb') as pdf:
                     pdf.write(dpdfurl.read())
                     pdf.close()
+                    log.info("Pdf downloaded")
                     return(pdf_path)
             except IOError as e:
-                print("Error {}".format(e))
+                log.error("Error {}".format(e))
 
     def downloadOnePdfOfCampaign(self, campaign_url, book_position, download_dir="downloads"):
         pdf_url = self.getOnePdfUrlofCampaign(self, campaign_url, book_position)
@@ -100,4 +107,5 @@ class Sprea(object):
         pdf_info['name'] = parse_qs((urlparse(pdf_url).query))['doc'][0]
         pdf_info['anagrafica'] = parse_qs((urlparse(pdf_url).query))['a'][0]
         pdf_info['title'] = parse_qs((urlparse(pdf_url).query))['o'][0]
+        log.info("Pdf info Name: {}, Title: {}".format(pdf_info['name'], pdf_info['title']))
         return(pdf_info)
