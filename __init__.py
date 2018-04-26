@@ -9,4 +9,3 @@ except ImportError:
             pass
 
 logging.getLogger('sprea_utils').addHandler(NullHandler())
-logging.Formatter("%(asctime)s - [%(process)d] - %(levelname)s %(module)s: %(message)s")
