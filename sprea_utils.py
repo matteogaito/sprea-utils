@@ -12,7 +12,7 @@ import inspect
 import logging
 log = logging.getLogger(__name__)
 
-URL = "http://sprea.it"
+URL = "https://sprea.it"
 
 
 class Sprea(object):
