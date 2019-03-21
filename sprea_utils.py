@@ -26,7 +26,7 @@ class Sprea(object):
         # Create a browser object
         browser = mechanicalsoup.Browser()
         # request Page
-        login_page = browser.get(URL)
+        login_page = browser.get(URL, verify=False)
         # grab the login form
         login_form = login_page.soup.find("form")
         log.info("Enter user and password into user and password field")
